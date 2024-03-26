@@ -1,11 +1,50 @@
-{% extends "master.html" %}
+<!-- translate.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Translation</title>
+</head>
+<body>
+    <h1>Voice Translation</h1>
+    <form id="translation-form">
+        <button type="button" id="start-btn">Start Recording</button>
+        <button type="button" id="stop-btn" style="display: none;">Stop Recording</button>
+    </form>
+    <div id="translation-result" style="display: none;">
+        <h2>Translated Text:</h2>
+        <p id="translated-text"></p>
+        <audio controls id="translated-audio" style="display: none;"></audio>
+    </div>
 
-{% block title %}
-   Translator App
-{% endblock %}
+    <script>
+        // JavaScript to handle recording and translation
+        document.getElementById('start-btn').addEventListener('click', startRecording);
+        document.getElementById('stop-btn').addEventListener('click', stopRecording);
 
-{% block content %}
-<div class="page-title">
-<h2>Speech-to-Text Translator App</h2>
-<h3>Speak in English and watch your translation appear on the screen.</h3>
-</div>
+        function startRecording() {
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('stop-btn').style.display = 'block';
+            document.getElementById('translation-result').style.display = 'none';
+            
+            // Send request to start recording
+            fetch('/translate/', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.translated_text) {
+                        document.getElementById('translated-text').innerText = data.translated_text;
+                        document.getElementById('translation-result').style.display = 'block';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function stopRecording() {
+            document.getElementById('start-btn').style.display = 'block';
+            document.getElementById('stop-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
